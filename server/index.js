@@ -94,3 +94,15 @@ function activateUser(id, name, room) {
 function userLeavesApp(id) {
     UsersState.setUsers(UsersState.users.filter((user) => user.id !== id));
 }
+
+function getUser(id) {
+    return UsersState.users.find(user => user.id === id);
+}
+
+function getUsersInRoom(room) {
+    return UsersState.users.filter(user => user.room === room);
+}
+
+function getAllActiveRooms() {
+    return Array.from(new Set(UsersState.users.map(user => user.room))); 
+}
