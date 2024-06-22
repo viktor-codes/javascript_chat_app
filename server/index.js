@@ -107,6 +107,21 @@ io.on("connection", (socket) => {
         }
     });
 
+    // Listening for a messages event
+    socket.on("message", (name, text) => {
+        const room = getUser(socket.id)?.room;
+        if (room) {
+            io.to(room).emit("message", buildMsg(name, text));
+        }
+    });
+    // Listen for activity
+    socket.on("activity", (name) => {
+        const room = getUser(socket.id)?.room;
+        if (room) {
+            socket.broadcast.to(room).emit("activity", name);
+        }
+    });
+
     // Upon connection - only to user
     socket.emit("message", buildMsg(ADMIN, "Welcome to Chat App"));
 
@@ -115,17 +130,6 @@ io.on("connection", (socket) => {
         "message",
         `User ${socket.id.substring(0, 5)} connected`
     );
-
-    // Listen for activity
-    socket.on("message", (data) => {
-        console.log(data);
-        io.emit("message", `${socket.id.substring(0, 5)}: ${data}`);
-    });
-
-    // Listen for activity
-    socket.on("activity", (name) => {
-        socket.broadcast.emit("activity", name);
-    });
 });
 
 function buildMsg(name, text) {
