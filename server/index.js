@@ -9,6 +9,8 @@ const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT || 3500;
 
+const ADMIN = "Admin";
+
 const app = express();
 
 app.use(express.static(path.join(__dirname, "public")));
@@ -25,6 +27,14 @@ const io = new Server(expressServer, {
                 : ["http://localhost:5500", "http://127.0.0.1:5500"],
     },
 });
+
+// state
+const UsersState = {
+    users: [],
+    setUsers: function (newUsersArray) {
+        this.users = newUsersArray;
+    }
+}
 
 io.on("connection", (socket) => {
     console.log(`User ${socket.id} connected`);
@@ -58,3 +68,16 @@ io.on("connection", (socket) => {
         socket.broadcast.emit("activity", name);
     });
 });
+
+function buildMsg(name, text) {
+    return {
+        name,
+        text,
+        time: new Intl.DateTimeFormat("default", {
+            hour: "numeric",
+            minute: "numeric",
+            second: "numeric"
+        }).format(new Date()),
+    }
+};
+    
