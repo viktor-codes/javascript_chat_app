@@ -91,3 +91,16 @@ function showUsers(users) {
         });
     }
 }
+
+function showRooms(rooms) {
+    roomsList.textContent = "";
+    if (rooms) {
+        usersList.innerHTML = `<em>Active Rooms:</em>`;
+        rooms.forEach((room, i) => {
+            roomsList.textContent += ` ${room}`;
+            if (rooms.length > 1 && i !== rooms.length - 1) {
+                roomsList.textContent += ",";
+            }
+        });
+    }
+}
