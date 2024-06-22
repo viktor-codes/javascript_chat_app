@@ -72,9 +72,22 @@ let activityTimer;
 socket.on("activity", (name) => {
     activity.textContent = `${name} is typing...`;
 
-    //Clear after 3 seconds
+    //Clear after 1 second
     clearTimeout(activityTimer);
     activityTimer = setTimeout(() => {
         activity.textContent = "";
-    }, 3000);
+    }, 1000);
 });
+
+function showUsers(users) {
+    usersList.textContent = "";
+    if (users) {
+        usersList.innerHTML = `<em>Users in ${chatRoom.value}</em>`;
+        users.forEach((user, i) => {
+            usersList.textContent += ` ${user.name}`;
+            if (users.length > 1 && i !== users.length - 1) {
+                usersList.textContent += ",";
+            }
+        });
+    }
+}
