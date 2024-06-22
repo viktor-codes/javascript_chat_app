@@ -5,12 +5,11 @@ const nameInput = document.querySelector("#name");
 const chatRoom = document.querySelector("#room");
 const activity = document.querySelector(".activity");
 const usersList = document.querySelector(".user-list");
-const roomsList = document.querySelector(".room-list");
+const roomList = document.querySelector(".room-list");
 const chatDisplay = document.querySelector(".chat-display");
 
 function sendMessage(e) {
     e.preventDefault();
-
     if (nameInput.value && msgInput.value && chatRoom.value) {
         socket.emit("message", {
             name: nameInput.value,
@@ -24,7 +23,7 @@ function sendMessage(e) {
 function enterRoom(e) {
     e.preventDefault();
     if (nameInput.value && chatRoom.value) {
-        socket.emit("enter-room", {
+        socket.emit("enterRoom", {
             name: nameInput.value,
             room: chatRoom.value,
         });
@@ -34,8 +33,6 @@ function enterRoom(e) {
 document.querySelector(".form-msg").addEventListener("submit", sendMessage);
 
 document.querySelector(".form-join").addEventListener("submit", enterRoom);
-
-document.querySelector(".form-msg").addEventListener("submit", sendMessage);
 
 msgInput.addEventListener("keypress", () => {
     socket.emit("activity", nameInput.value);
@@ -72,17 +69,25 @@ let activityTimer;
 socket.on("activity", (name) => {
     activity.textContent = `${name} is typing...`;
 
-    //Clear after 1 second
+    // Clear after 3 seconds
     clearTimeout(activityTimer);
     activityTimer = setTimeout(() => {
         activity.textContent = "";
-    }, 1000);
+    }, 3000);
+});
+
+socket.on("userList", ({ users }) => {
+    showUsers(users);
+});
+
+socket.on("roomList", ({ rooms }) => {
+    showRooms(rooms);
 });
 
 function showUsers(users) {
     usersList.textContent = "";
     if (users) {
-        usersList.innerHTML = `<em>Users in ${chatRoom.value}</em>`;
+        usersList.innerHTML = `<em>Users in ${chatRoom.value}:</em>`;
         users.forEach((user, i) => {
             usersList.textContent += ` ${user.name}`;
             if (users.length > 1 && i !== users.length - 1) {
@@ -93,13 +98,13 @@ function showUsers(users) {
 }
 
 function showRooms(rooms) {
-    roomsList.textContent = "";
+    roomList.textContent = "";
     if (rooms) {
-        usersList.innerHTML = `<em>Active Rooms:</em>`;
+        roomList.innerHTML = "<em>Active Rooms:</em>";
         rooms.forEach((room, i) => {
-            roomsList.textContent += ` ${room}`;
+            roomList.textContent += ` ${room}`;
             if (rooms.length > 1 && i !== rooms.length - 1) {
-                roomsList.textContent += ",";
+                roomList.textContent += ",";
             }
         });
     }
