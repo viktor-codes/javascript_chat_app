@@ -90,3 +90,7 @@ function activateUser(id, name, room) {
     ]);
     return user;
 }
+
+function userLeavesApp(id) {
+    UsersState.setUsers(UsersState.users.filter((user) => user.id !== id));
+}
