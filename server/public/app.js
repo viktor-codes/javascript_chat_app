@@ -11,10 +11,10 @@ const chatDisplay = document.querySelector(".chat-display");
 function sendMessage(e) {
     e.preventDefault();
 
-    if (nameInput .value && msgInput.value && chatRoom.value) {
-        socket.emit("message",{
+    if (nameInput.value && msgInput.value && chatRoom.value) {
+        socket.emit("message", {
             name: nameInput.value,
-            text:msgInput.value
+            text: msgInput.value,
         });
         msgInput.value = "";
     }
@@ -26,10 +26,9 @@ function enterRoom(e) {
     if (nameInput.value && chatRoom.value) {
         socket.emit("enter-room", {
             name: nameInput.value,
-            room: chatRoom.value
+            room: chatRoom.value,
         });
     }
-
 }
 
 document.querySelector(".form-msg").addEventListener("submit", sendMessage);
@@ -45,21 +44,31 @@ msgInput.addEventListener("keypress", () => {
 // Listen for messages
 socket.on("message", (data) => {
     activity.textContent = "";
-    const {name, text, time } = data;
+    const { name, text, time } = data;
     const li = document.createElement("li");
     li.className = "post";
-    if (name === nameInput.value) li.classList.add("me") = "post post--left"
-    if (name !== nameInput.value && name !== "Admin") li.classList.add("post post--right")
-    if (name !== "Admin") li.innerHtml = `<div class="post__header ${name === nameInput.value ? "post__header--user" : "post__header--reply"}">
-    <span class="post__header--name">${name}</span>
-    <span class="post__header--time">${time}</span>
-    </div>
-    <div class="post__text">${text}</div>`
-    
-    document.querySelector("ul").appendChild(li);
+    if (name === nameInput.value) li.className = "post post--left";
+    if (name !== nameInput.value && name !== "Admin")
+        li.className = "post post--right";
+    if (name !== "Admin") {
+        li.innerHTML = `<div class="post__header ${
+            name === nameInput.value
+                ? "post__header--user"
+                : "post__header--reply"
+        }">
+        <span class="post__header--name">${name}</span> 
+        <span class="post__header--time">${time}</span> 
+        </div>
+        <div class="post__text">${text}</div>`;
+    } else {
+        li.innerHTML = `<div class="post__text">${text}</div>`;
+    }
+    document.querySelector(".chat-display").appendChild(li);
+
+    chatDisplay.scrollTop = chatDisplay.scrollHeight;
 });
 
-let activityTimer
+let activityTimer;
 socket.on("activity", (name) => {
     activity.textContent = `${name} is typing...`;
 
